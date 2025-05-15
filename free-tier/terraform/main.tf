@@ -10,7 +10,7 @@ terraform {
     }
   }
 
-  required_version = ">= 1.3.0"
+  required_version = ">= 1.12.0" # dernière version stable disponible
 }
 
 # Fournisseur : AWS
@@ -21,7 +21,7 @@ provider "aws" {
 # VPC : réseau avec sous-réseaux privés et publics
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.1.0"
+  version = "5.21.0" # dernière version stable disponible
 
   name = "eks-vpc"
   cidr = "10.0.0.0/16"
@@ -37,10 +37,10 @@ module "vpc" {
 # Cluster Kubernetes EKS
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version         = "20.8.4"
+  version         = "20.36.0" # dernière version stable disponible
 
   cluster_name    = var.cluster_name
-  cluster_version = "1.27"
+  cluster_version = "1.32" # dernière version disponible dans le support amazon EKS. source : https://docs.aws.amazon.com/fr_fr/eks/latest/userguide/kubernetes-versions.html 
 
   vpc_id  = module.vpc.vpc_id
   subnets = module.vpc.private_subnets
