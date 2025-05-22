@@ -1,14 +1,14 @@
-# Étape 1 : utiliser une image officielle Java
-FROM openjdk:17-jdk-slim
+# Étape 1 : Image Java légère
+FROM eclipse-temurin:17
 
-# Étape 2 : définir le répertoire de travail dans le conteneur
+# Définir le dossier de travail
 WORKDIR /app
 
-# Étape 3 : copier le fichier .jar dans le conteneur
+# Copier ton JAR compilé
 COPY target/hello-springboot-1.0.0.jar app.jar
 
-# Étape 4 : exposer le port que l'app utilise
+# Exposer le port utilisé par Spring Boot
 EXPOSE 8080
 
-# Étape 5 : définir la commande pour démarrer l'app
+# Lancer l'application
 ENTRYPOINT ["java", "-jar", "app.jar"]
