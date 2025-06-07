@@ -15,3 +15,14 @@ variable "vpc_name" {
   type        = string
   default     = "infoline-vpc"
 }
+
+# Tags génériques voir https://spacelift.io/blog/terraform-tags
+variable "common_tags" {
+  description = "Tags communs à toutes les ressources AWS généré par Terraform"
+  type        = map(string)
+  default = {
+    Environment = "dev"
+    Terraform   = "true"
+    Project     = "STUDI-ECF"
+  }
+}

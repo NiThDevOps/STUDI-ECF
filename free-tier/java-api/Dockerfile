@@ -1,5 +1,5 @@
 # Étape 1 : Image Java légère
-FROM eclipse-temurin:17
+FROM eclipse-temurin:17-jre-alpine
 
 # Définir le dossier de travail
 WORKDIR /app
