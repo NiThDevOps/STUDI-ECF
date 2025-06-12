@@ -38,8 +38,9 @@ module "eks" {
   eks_managed_node_groups = { # voir "https://docs.aws.amazon.com/fr_fr/eks/latest/userguide/managed-node-groups.html" utilisation d'un seul node pour rester dans le free tier
     default = {
       # Mode DEV (ECF / free tier / démo) —> pour le passage du projet. pas de HA, auto scaling, puisqu'un seul node. L'interet c'est qu'avec managed node groups, AWS gère les mises à jour et la maintenance.
-      desired_capacity = 1
-      max_capacity     = 1
+      # 12/06/2025 : augmentation du nombre de EC2 car limité à 4 pods par instance et déjà 4 pods système utilisé donc impossible d'ajouter un pod avec l'appli java spring boot
+      desired_capacity = 3
+      max_capacity     = 3
       min_capacity     = 1
       instance_types   = ["t3.micro"]
     }

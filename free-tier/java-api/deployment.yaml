@@ -1,0 +1,23 @@
+# voir https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+
+apiVersion: apps/v1          # Type d'API Kubernetes utilisée (ici pour les Deployments)
+kind: Deployment             # On déclare un "Deployment"
+metadata:
+  name: hello-springboot-deployment   # Nom du déploiement
+  labels:
+    app: hello-springboot             # Étiquette (utilisée pour faire le lien avec le Service)
+spec:
+  replicas: 1                         # Nombre d'instances de ton app
+  selector:
+    matchLabels:
+      app: hello-springboot           # Sélection des pods via ce label
+  template:                           # Modèle de pod à créer
+    metadata:
+      labels:
+        app: hello-springboot
+    spec:
+      containers:
+      - name: hello-springboot        # Nom du conteneur dans le pod
+        image: 90347913...:latest     # Ton image Docker (dans ECR)
+        ports:
+        - containerPort: 8080         # Port exposé par le conteneur (Spring Boot par défaut)
