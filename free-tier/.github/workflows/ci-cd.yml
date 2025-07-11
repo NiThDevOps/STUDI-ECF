@@ -1,0 +1,65 @@
+# 👷 Nom du workflow (visible dans GitHub)
+name: CI/CD Pipeline
+
+# 🚀 Déclencheur : ce pipeline s'exécute à chaque push sur la branche main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:  # 👨‍💻 Nom du job (exécuté dans une machine virtuelle GitHub)
+    runs-on: ubuntu-latest  # ⚙️ GitHub utilisera un runner Linux
+
+    env:  # 🔧 Variables d'environnement disponibles dans le job
+      ECR_REPOSITORY: hello-springboot
+      AWS_REGION: us-east-1
+
+    steps:  # 📜 Étapes du job
+      - name: Checkout code
+        uses: actions/checkout@v3
+        # 🔄 Récupère ton code source depuis GitHub
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsDeployRole
+          aws-region: ${{ env.AWS_REGION }}
+        # 🔐 Se connecte à AWS avec les permissions de ton rôle IAM
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        # 🔑 Se connecte à ECR pour push/pull des images Docker
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+        # ☕️ Configure Java 17 pour builder ton projet Spring Boot
+
+      - name: Build JAR
+        run: mvn clean package --file free-tier/java-api/pom.xml
+        # 🛠 Compile ton projet Maven et génère le JAR
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest ./free-tier/java-api
+        # 🐳 Crée une image Docker avec tag latest
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+        # ☁️ Pousse l'image vers ton registry AWS ECR
+
+      - name: Update Kubeconfig
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name <ton-cluster-EKS>
+        # ⚙️ Configure `kubectl` pour utiliser ton cluster EKS
+
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f free-tier/java-api/kubernetes/deployment.yaml
+          kubectl apply -f free-tier/java-api/kubernetes/service.yaml
+        # 🚢 Déploie ton app dans le cluster via les fichiers YAML

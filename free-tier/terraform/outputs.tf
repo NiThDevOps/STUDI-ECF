@@ -43,7 +43,22 @@ output "eks_node_group_iam_role_arn" {
   value       = module.eks.eks_managed_node_groups["default"].iam_role_arn
 }
 
-output "ecr_repository_url" {
-  description = "URL du repository ECR"
+output "ecr_repository_springboot_url" {
+  description = "URL du dépôt ECR pour Spring Boot"
   value       = aws_ecr_repository.springboot.repository_url
+}
+
+output "ecr_repository_frontend_admin_url" {
+  description = "URL du dépôt ECR pour le frontend admin"
+  value       = aws_ecr_repository.frontend_admin.repository_url
+}
+
+output "ecr_repository_frontend_public_url" {
+  description = "URL du dépôt ECR pour le frontend public"
+  value       = aws_ecr_repository.frontend_public.repository_url
+}
+
+output "api_gateway_url" {
+  description = "URL publique de l'API Gateway HTTP"
+  value       = aws_apigatewayv2_api.http_api.api_endpoint
 }

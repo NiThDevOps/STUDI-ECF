@@ -18,6 +18,6 @@ spec:
     spec:
       containers:
       - name: hello-springboot        # Nom du conteneur dans le pod
-        image: 90347913...:latest     # Ton image Docker (dans ECR)
+        image: 903479130308.dkr.ecr.us-east-1.amazonaws.com/hello-springboot:latest     # image Docker (dans ECR) / Utilisation de <TO_BE_REPLACED> pour passer l'image dynamiquement dans le pipeline 
         ports:
         - containerPort: 8080         # Port exposé par le conteneur (Spring Boot par défaut)
