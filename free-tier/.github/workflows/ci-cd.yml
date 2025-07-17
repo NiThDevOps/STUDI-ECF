@@ -1,65 +1,86 @@
-# 👷 Nom du workflow (visible dans GitHub)
 name: CI/CD Pipeline
 
-# 🚀 Déclencheur : ce pipeline s'exécute à chaque push sur la branche main
 on:
   push:
     branches:
       - main
 
 jobs:
-  deploy:  # 👨‍💻 Nom du job (exécuté dans une machine virtuelle GitHub)
-    runs-on: ubuntu-latest  # ⚙️ GitHub utilisera un runner Linux
+  deploy:
+    runs-on: ubuntu-latest
 
-    env:  # 🔧 Variables d'environnement disponibles dans le job
-      ECR_REPOSITORY: hello-springboot
-      AWS_REGION: us-east-1
-
-    steps:  # 📜 Étapes du job
+    steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        # 🔄 Récupère ton code source depuis GitHub
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsDeployRole
-          aws-region: ${{ env.AWS_REGION }}
-        # 🔐 Se connecte à AWS avec les permissions de ton rôle IAM
+          role-to-assume: arn:aws:iam::<ton-id>:role/GitHubActionsDeployRole
+          aws-region: us-east-1
 
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        # 🔑 Se connecte à ECR pour push/pull des images Docker
 
-      - name: Set up JDK
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-        # ☕️ Configure Java 17 pour builder ton projet Spring Boot
+
+      - name: Load Terraform outputs
+        id: tf_outputs
+        run: |
+          echo "ECR_JAVA=$(jq -r .ecr_repository_springboot_url.value terraform/outputs.json)" >> $GITHUB_ENV
+          echo "ECR_ADMIN=$(jq -r .ecr_repository_frontend_admin_url.value terraform/outputs.json)" >> $GITHUB_ENV
+          echo "ECR_PUBLIC=$(jq -r .ecr_repository_frontend_public_url.value terraform/outputs.json)" >> $GITHUB_ENV
+          echo "EKS_CLUSTER_NAME=$(jq -r .eks_cluster_name.value terraform/outputs.json)" >> $GITHUB_ENV
 
       - name: Build JAR
         run: mvn clean package --file free-tier/java-api/pom.xml
-        # 🛠 Compile ton projet Maven et génère le JAR
 
-      - name: Build Docker image
+      - name: Build & Push Java Image
         run: |
-          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest ./free-tier/java-api
-        # 🐳 Crée une image Docker avec tag latest
+          docker build -t $ECR_JAVA:latest ./free-tier/java-api
+          docker push $ECR_JAVA:latest
 
-      - name: Push Docker image to ECR
+      - name: Build & Push Frontend Admin
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-        # ☁️ Pousse l'image vers ton registry AWS ECR
+          cd free-tier/frontend-admin
+          npm install
+          npm run build -- --output-path=dist
+          cd ../..
+          docker build -t $ECR_ADMIN:latest -f free-tier/frontend-admin/Dockerfile free-tier/frontend-admin
+          docker push $ECR_ADMIN:latest
 
-      - name: Update Kubeconfig
+      - name: Build & Push Frontend Public
         run: |
-          aws eks update-kubeconfig --region $AWS_REGION --name <ton-cluster-EKS>
-        # ⚙️ Configure `kubectl` pour utiliser ton cluster EKS
+          cd free-tier/frontend-public
+          npm install
+          npm run build -- --output-path=dist
+          cd ../..
+          docker build -t $ECR_PUBLIC:latest -f free-tier/frontend-public/Dockerfile free-tier/frontend-public
+          docker push $ECR_PUBLIC:latest
 
-      - name: Deploy to EKS
+      - name: Configure kubectl
         run: |
-          kubectl apply -f free-tier/java-api/kubernetes/deployment.yaml
-          kubectl apply -f free-tier/java-api/kubernetes/service.yaml
-        # 🚢 Déploie ton app dans le cluster via les fichiers YAML
+          aws eks update-kubeconfig --region us-east-1 --name $EKS_CLUSTER_NAME
+
+      - name: Deploy Java API via Helm
+        run: |
+          helm upgrade --install java-api ./charts/java-api \
+            --set image.repository=$ECR_JAVA \
+            --set image.tag=latest
+
+      - name: Deploy Frontend Admin via Helm
+        run: |
+          helm upgrade --install frontend-admin ./charts/frontend-admin \
+            --set image.repository=$ECR_ADMIN \
+            --set image.tag=latest
+
+      - name: Deploy Frontend Public via Helm
+        run: |
+          helm upgrade --install frontend-public ./charts/frontend-public \
+            --set image.repository=$ECR_PUBLIC \
+            --set image.tag=latest
