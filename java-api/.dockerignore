@@ -1,0 +1,17 @@
+# Évite de copier des fichiers inutiles dans l’image Spring Boot
+target/
+*.iml
+.idea/
+*.log
+
+# Fichiers de config et système
+.git/
+.dockerignore
+Dockerfile
+README.md
+
+# Terraform (si présent dans ce dossier)
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars

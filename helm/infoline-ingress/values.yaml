@@ -1,0 +1,14 @@
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - path: /admin
+      serviceName: frontend-admin
+      servicePort: 80
+    - path: /public
+      serviceName: frontend-public
+      servicePort: 80
+    - path: /api
+      serviceName: java-api
+      servicePort: 8080

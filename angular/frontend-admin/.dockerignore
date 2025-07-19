@@ -1,0 +1,13 @@
+# Exclut les dépendances locales (reconstruites dans l'image)
+node_modules/
+dist/
+.angular/
+
+# Git & système
+.git/
+Dockerfile
+.dockerignore
+README.md
+
+# Logs éventuels
+*.log

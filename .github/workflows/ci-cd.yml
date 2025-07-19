@@ -1,0 +1,133 @@
+# déclenchement du workflow à chaque push sur main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform Apply & Export Outputs
+    runs-on: ubuntu-latest
+
+    steps:
+      # Récupère le code source
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Installe Terraform dans l'environnement GitHub Actions
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Initialise le projet Terraform
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      # Applique l’infrastructure automatiquement
+      - name: Terraform Apply
+        working-directory: terraform
+        run: terraform apply -auto-approve
+
+      # Sauvegarde les outputs dans terraform/outputs.json pour le job suivant
+      - name: Export Terraform outputs to JSON
+        working-directory: terraform
+        run: terraform output -json > outputs.json
+
+  deploy:
+    name: Build, Push, Deploy
+    runs-on: ubuntu-latest
+    needs: terraform # Attend la fin du job terraform
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Authentifie auprès d’AWS avec le rôle IAM GitHubActionsDeployRole
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<ton-id>:role/GitHubActionsDeployRole
+          aws-region: us-east-1
+
+      # Authentifie Docker avec ECR
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Installe Java pour compiler java-api (backend)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Charge dynamiquement les variables ECR/EKS depuis outputs.json
+      - name: Load Terraform outputs
+        id: tf_outputs
+        working-directory: terraform
+        run: |
+          echo "ECR_JAVA=$(jq -r .ecr_repository_springboot_url.value outputs.json)" >> $GITHUB_ENV
+          echo "ECR_ADMIN=$(jq -r .ecr_repository_frontend_admin_url.value outputs.json)" >> $GITHUB_ENV
+          echo "ECR_PUBLIC=$(jq -r .ecr_repository_frontend_public_url.value outputs.json)" >> $GITHUB_ENV
+          echo "EKS_CLUSTER_NAME=$(jq -r .eks_cluster_name.value outputs.json)" >> $GITHUB_ENV
+
+      # Compilation Java
+      - name: Build Java API JAR
+        run: mvn clean package --file java-api/pom.xml
+
+      # Build + push de java-api dans l'ECR
+      - name: Build & Push Java API Docker Image
+        run: |
+          docker build -t $ECR_JAVA:latest ./java-api
+          docker push $ECR_JAVA:latest
+
+      # Build + push frontend-admin dans l'ECR
+      - name: Build & Push Frontend Admin Docker Image
+        run: |
+          cd angular/frontend-admin
+          npm install
+          npm run build -- --output-path=dist
+          cd ../..
+          docker build -t $ECR_ADMIN:latest -f angular/frontend-admin/Dockerfile angular/frontend-admin
+          docker push $ECR_ADMIN:latest
+
+      # Build + push frontend-public dans l'ECR
+      - name: Build & Push Frontend Public Docker Image
+        run: |
+          cd angular/frontend-public
+          npm install
+          npm run build -- --output-path=dist
+          cd ../..
+          docker build -t $ECR_PUBLIC:latest -f angular/frontend-public/Dockerfile angular/frontend-public
+          docker push $ECR_PUBLIC:latest
+
+      # Configure l’accès au cluster EKS
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name $EKS_CLUSTER_NAME
+
+      # Déploiement Helm pour java-api
+      - name: Deploy Java API via Helm
+        run: |
+          helm upgrade --install java-api helm/java-api \
+            --set image.repository=$ECR_JAVA \
+            --set image.tag=latest
+
+      # Déploiement Helm pour frontend-admin
+      - name: Deploy Frontend Admin via Helm
+        run: |
+          helm upgrade --install frontend-admin helm/frontend-admin \
+            --set image.repository=$ECR_ADMIN \
+            --set image.tag=latest
+
+      # Déploiement Helm pour frontend-public
+      - name: Deploy Frontend Public via Helm
+        run: |
+          helm upgrade --install frontend-public helm/frontend-public \
+            --set image.repository=$ECR_PUBLIC \
+            --set image.tag=latest
+
+      # Déploiement Helm pour l’Ingress
+      - name: Deploy Ingress via Helm
+        run: |
+          helm upgrade --install infoline-ingress helm/infoline-ingress
