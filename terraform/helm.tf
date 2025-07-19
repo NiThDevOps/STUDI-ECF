@@ -1,7 +1,7 @@
 # déploiement du ingress-nginx (ingress controller = pod déployé - écoute requête http/https - applique les règles définis dans ingress et redirige vers les bons services) par Terraform
 # voir (https://registry.terraform.io/providers/hashicorp/helm/latest/docs)
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = "~/.kube/config"
   }
 }
