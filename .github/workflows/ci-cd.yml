@@ -46,7 +46,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<ton-id>:role/GitHubActionsDeployRole
+          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsDeployRole
           aws-region: us-east-1
 
       # Authentifie Docker avec ECR
