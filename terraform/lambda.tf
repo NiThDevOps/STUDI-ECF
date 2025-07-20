@@ -7,7 +7,7 @@ module "login_lambda" {
   handler       = "login.handler"
   runtime       = "nodejs18.x"
 
-  source_path = "${path.module}/../../lambda/login.js"
+  source_path = "${path.root}/../lambda/login.js"
 
   memory_size = 128
   timeout     = 5
