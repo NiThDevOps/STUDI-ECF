@@ -31,7 +31,7 @@ resource "helm_release" "nginx_ingress" {
 
 resource "helm_release" "java_api" {
   name       = "java-api"
-  chart      = "${path.module}/../charts/java-api"
+  chart      = "${path.module}/../helm/java-api"
   namespace  = "default"
 
   set = [
@@ -43,7 +43,7 @@ resource "helm_release" "java_api" {
 }
 resource "helm_release" "frontend_admin" {
   name       = "frontend-admin"
-  chart      = "${path.module}/../charts/frontend-admin"
+  chart      = "${path.module}/../helm/frontend-admin"
   namespace  = "default"
 
   set = [
@@ -56,7 +56,7 @@ resource "helm_release" "frontend_admin" {
 
 resource "helm_release" "frontend_public" {
   name       = "frontend-public"
-  chart      = "${path.module}/../charts/frontend-public"
+  chart      = "${path.module}/../helm/frontend-public"
   namespace  = "default"
 
   set = [
@@ -69,7 +69,7 @@ resource "helm_release" "frontend_public" {
 
 resource "helm_release" "infoline_ingress" {
   name       = "infoline-ingress"
-  chart      = "${path.module}/../charts/infoline-ingress"
+  chart      = "${path.module}/../helm/infoline-ingress"
   namespace  = "default"
 
   depends_on = [
