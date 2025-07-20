@@ -8,11 +8,11 @@ jobs:
   terraform:
     name: Terraform Apply & Export Outputs
     runs-on: ubuntu-latest
-    permissions: # GitHub Actions ne donne pas par défaut l'accès au token OIDC par sécurité, activation explicitement avec "permissions"
+    permissions: # GitHub Actions ne donne pas par défaut l'accès au token OIDC par sécurité, activation explicitement avec permissions
       id-token: write
       contents: read
     steps:
-      # Récupère le code source
+      # Récupère le code source 
       - name: Checkout code
         uses: actions/checkout@v3
       
