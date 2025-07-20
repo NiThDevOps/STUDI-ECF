@@ -15,15 +15,16 @@ resource "helm_release" "nginx_ingress" {
   namespace  = "kube-system"
   version    = "4.10.0"
 
-  set {
-    name  = "controller.service.type" # IP publique automatiquement pour ton Ingress
-    value = "LoadBalancer"
-  }
-
-  set {
-    name  = "controller.publishService.enabled"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "controller.service.type" # IP publique automatiquement pour Ingress
+      value = "LoadBalancer"
+    },
+    {
+      name  = "controller.publishService.enabled"
+      value = "true"
+    }
+  ]
 
   depends_on = [module.eks]
 }
@@ -33,21 +34,24 @@ resource "helm_release" "java_api" {
   chart      = "${path.module}/../charts/java-api"
   namespace  = "default"
 
-  set {
-    name  = "image.repository"
-    value = aws_ecr_repository.springboot.repository_url
-  }
+  set = [
+    {
+      name  = "image.repository"
+      value = aws_ecr_repository.springboot.repository_url
+    }
+  ]
 }
-
 resource "helm_release" "frontend_admin" {
   name       = "frontend-admin"
   chart      = "${path.module}/../charts/frontend-admin"
   namespace  = "default"
 
-  set {
-    name  = "image.repository"
-    value = aws_ecr_repository.frontend_admin.repository_url
-  }
+  set = [
+    {
+      name  = "image.repository"
+      value = aws_ecr_repository.frontend_admin.repository_url
+    }
+  ]
 }
 
 resource "helm_release" "frontend_public" {
@@ -55,10 +59,12 @@ resource "helm_release" "frontend_public" {
   chart      = "${path.module}/../charts/frontend-public"
   namespace  = "default"
 
-  set {
-    name  = "image.repository"
-    value = aws_ecr_repository.frontend_public.repository_url
-  }
+  set = [
+    {
+      name  = "image.repository"
+      value = aws_ecr_repository.frontend_public.repository_url
+    }
+  ]  
 }
 
 resource "helm_release" "infoline_ingress" {
