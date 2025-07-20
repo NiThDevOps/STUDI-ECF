@@ -11,8 +11,8 @@ terraform {
 
 # Fournisseur : AWS
 provider "aws" {
-  region = var.aws_region
-
+  region = var.region
+  
   assume_role {
     role_arn = "arn:aws:iam::903479130308:role/GitHubActionsDeployRole"
   }
