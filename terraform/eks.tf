@@ -10,7 +10,7 @@ module "eks" {
 
   cluster_endpoint_public_access       = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
-  #cluster_endpoint_public_access_cidrs = ["91.166.113.15/32"]
+  #cluster_endpoint_public_access_cidrs = ["91.166.113.15/32"] 
 
   enable_cluster_creator_admin_permissions = true
   enable_irsa                              = true
