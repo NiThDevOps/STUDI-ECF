@@ -29,7 +29,7 @@ output "eks_cluster_certificate_authority" {
 }
 
 output "eks_cluster_oidc_issuer_url" {
-  description = "URL de l'OIDC issuer du cluster (pour IRSA)"
+  description = "URL de l'OIDC issuer du cluster pour IRSA"
   value       = module.eks.cluster_oidc_issuer_url
 }
 
@@ -61,4 +61,16 @@ output "ecr_repository_frontend_public_url" {
 output "api_gateway_url" {
   description = "URL publique de l'API Gateway HTTP"
   value       = aws_apigatewayv2_api.http_api.api_endpoint
+}
+
+output "java_api_ecr_url" {
+  value = aws_ecr_repository.springboot.repository_url
+}
+
+output "frontend_admin_ecr_url" {
+  value = aws_ecr_repository.frontend_admin.repository_url
+}
+
+output "frontend_public_ecr_url" {
+  value = aws_ecr_repository.frontend_public.repository_url
 }

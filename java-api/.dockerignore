@@ -1,5 +1,4 @@
 # Évite de copier des fichiers inutiles dans l’image Spring Boot
-target/
 *.iml
 .idea/
 *.log

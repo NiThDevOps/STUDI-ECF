@@ -4,7 +4,7 @@ FROM node:20 AS build-stage
 WORKDIR /app
 COPY . .
 RUN npm install
-RUN npm run build --configuration production
+RUN npm run build -- --configuration production --project frontend-admin
 
 # Étape 2 : Serveur web statique NGINX
 FROM nginx:alpine

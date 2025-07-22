@@ -4,7 +4,7 @@ FROM node:20 AS build-stage
 WORKDIR /app
 COPY . .
 RUN npm install
-RUN npm run build --configuration production
+RUN npm run build -- --configuration production --project frontend-public
 
 # Étape 2 : Serveur web statique NGINX
 FROM nginx:alpine
@@ -13,7 +13,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copier les fichiers Angular buildés
-COPY --from=build-stage /app/dist/frontend-public /usr/share/nginx/html
+COPY --from=build-stage /app/dist/frontend-public/browser /usr/share/nginx/html
 
 # Copier la config NGINX (optionnel si tu veux des routes propres)
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
