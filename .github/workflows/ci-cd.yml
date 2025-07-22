@@ -12,6 +12,10 @@ env:
   ECR_FRONTEND_PUBLIC_REPO: 903479130308.dkr.ecr.us-east-1.amazonaws.com/frontend-public
   ECR_FRONTEND_ADMIN_REPO: 903479130308.dkr.ecr.us-east-1.amazonaws.com/frontend-admin
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   backend:
     runs-on: ubuntu-latest
@@ -32,11 +36,10 @@ jobs:
       - name: Build Spring Boot
         run: mvn clean package -DskipTests
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsOIDCRole
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
@@ -70,11 +73,10 @@ jobs:
       - name: Build Angular (frontend-public)
         run: npm run build -- --configuration production --project frontend-public
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsOIDCRole
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
@@ -108,11 +110,10 @@ jobs:
       - name: Build Angular (frontend-admin)
         run: npm run build -- --configuration production --project frontend-admin
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsOIDCRole
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
@@ -124,28 +125,3 @@ jobs:
           docker build -t frontend-admin:latest .
           docker tag frontend-admin:latest $ECR_FRONTEND_ADMIN_REPO:latest
           docker push $ECR_FRONTEND_ADMIN_REPO:latest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [backend, frontend-public, frontend-admin]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-
-      - name: Deploy all Kubernetes manifests
-        run: |
-          kubectl apply -f terraform/kubernetes/java-api-deployment.yaml
-          kubectl apply -f terraform/kubernetes/frontend-public-deployment.yaml
-          kubectl apply -f terraform/kubernetes/frontend-admin-deployment.yaml
