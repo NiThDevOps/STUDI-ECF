@@ -28,7 +28,7 @@ de l’application, la direction vous demande de monitorer l’état des applica
 notifications en cas de dysfonctionnement.
 
 
-## 🏗 Objectif
+## Objectif
 Mettre en place l'infrastructure d'une application web complète :
 - Frontend : Angular (client et admin)
 - Backend : API Java Spring Boot
@@ -38,16 +38,5 @@ Mettre en place l'infrastructure d'une application web complète :
 - Infrastructure : Terraform (IaaS)
 - Monitoring : ELK (Elasticsearch + Kibana)
 
-## 🗂 Arborescence mise en place sur Github :
 
-STUDI-ECF/
-│
-├── terraform/ # Infrastructure cloud (Kubernetes, VPC, etc.)
-├── k8s/ # Déploiement Kubernetes YAML
-├── docker/ # Dockerfiles pour build des services
-├── angular/ # Applications Angular (client & admin)
-├── java-api/ # API backend Java Spring Boot
-├── cicd/ # Pipelines CI/CD (GitHub Actions)
-├── monitoring/ # Config ELK (Elasticsearch / Kibana)
-└── README.md
 
