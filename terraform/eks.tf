@@ -9,8 +9,7 @@ module "eks" {
   subnet_ids = concat(module.vpc.private_subnets, module.vpc.public_subnets)
 
   cluster_endpoint_public_access       = true
-  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
-  #cluster_endpoint_public_access_cidrs = ["91.166.113.15/32"] 
+  #cluster_endpoint_public_access_cidrs = ["X.X.X.X/32"] # autorisation d'accès Public seulement à mon IP
 
   enable_cluster_creator_admin_permissions = true
   enable_irsa                              = true
