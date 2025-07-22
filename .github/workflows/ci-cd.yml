@@ -17,24 +17,12 @@ permissions:
   contents: read
 
 jobs:
-  backend:
+  deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: java-api
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build Spring Boot
-        run: mvn clean package -DskipTests
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
@@ -42,86 +30,22 @@ jobs:
           role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsOIDCRole
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to ECR
+      - name: Update kubeconfig
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_BACKEND_REPO
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      - name: Build and Push Docker image
+      - name: Deploy Java API
         run: |
-          docker build -t hello-springboot:latest .
-          docker tag hello-springboot:latest $ECR_BACKEND_REPO:latest
-          docker push $ECR_BACKEND_REPO:latest
+          kubectl apply -f terraform/kubernetes/java-api-deployment.yaml
 
-  frontend-public:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: angular/frontend-public
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Angular (frontend-public)
-        run: npm run build -- --configuration production --project frontend-public
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsOIDCRole
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to ECR
+      - name: Deploy Frontend Public
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_FRONTEND_PUBLIC_REPO
+          kubectl apply -f terraform/kubernetes/frontend-public-deployment.yaml
 
-      - name: Build and Push Docker image
+      - name: Deploy Frontend Admin
         run: |
-          docker build -t frontend-public:latest .
-          docker tag frontend-public:latest $ECR_FRONTEND_PUBLIC_REPO:latest
-          docker push $ECR_FRONTEND_PUBLIC_REPO:latest
+          kubectl apply -f terraform/kubernetes/frontend-admin-deployment.yaml
 
-  frontend-admin:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: angular/frontend-admin
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Angular (frontend-admin)
-        run: npm run build -- --configuration production --project frontend-admin
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: arn:aws:iam::903479130308:role/GitHubActionsOIDCRole
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to ECR
+      - name: Check deployed pods
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_FRONTEND_ADMIN_REPO
-
-      - name: Build and Push Docker image
-        run: |
-          docker build -t frontend-admin:latest .
-          docker tag frontend-admin:latest $ECR_FRONTEND_ADMIN_REPO:latest
-          docker push $ECR_FRONTEND_ADMIN_REPO:latest
+          kubectl get pods
