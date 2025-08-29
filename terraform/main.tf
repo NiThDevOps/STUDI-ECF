@@ -6,7 +6,7 @@ terraform {
       version = "~> 5.0" # utilise la dernière version 5.X disponible. version 6 en bêta
     }
   }
-  required_version = ">= 1.12.0" # dernière version "stable" disponible.
+  required_version = ">= 1.12.0" # dernière version "stable" disponible.  
 }
 
 # Fournisseur : AWS
