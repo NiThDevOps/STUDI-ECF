@@ -1,0 +1,1154 @@
+{
+  "version": 4,
+  "terraform_version": "1.12.0",
+  "serial": 574,
+  "lineage": "d918d370-bb10-0cae-999b-70078f06cd50",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_ecr_repository",
+      "name": "frontend_public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ecr:us-east-1:903479130308:repository/frontend-public",
+            "encryption_configuration": [
+              {
+                "encryption_type": "AES256",
+                "kms_key": ""
+              }
+            ],
+            "force_delete": null,
+            "id": "frontend-public",
+            "image_scanning_configuration": [
+              {
+                "scan_on_push": true
+              }
+            ],
+            "image_tag_mutability": "MUTABLE",
+            "name": "frontend-public",
+            "registry_id": "903479130308",
+            "repository_url": "903479130308.dkr.ecr.us-east-1.amazonaws.com/frontend-public",
+            "tags": {
+              "Environment": "dev",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxMjAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "data",
+      "type": "aws_eks_addon_version",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "cni_ipv6_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "node_assume_role_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_addon",
+      "name": "before_compute",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_addon",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_identity_provider_config",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "cni_ipv6_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "eks_auto",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "additional",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "eks_auto",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "eks_auto_additional",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "data",
+      "type": "aws_ec2_instance_type",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "data",
+      "type": "aws_ec2_instance_type_offerings",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "role",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "data",
+      "type": "aws_ssm_parameter",
+      "name": "ami",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "data",
+      "type": "aws_subnets",
+      "name": "placement_group",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "managed",
+      "type": "aws_autoscaling_schedule",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "additional",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"]",
+      "mode": "managed",
+      "type": "aws_placement_group",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"].module.user_data",
+      "mode": "data",
+      "type": "cloudinit_config",
+      "name": "al2023_eks_managed_node_group",
+      "provider": "provider[\"registry.terraform.io/hashicorp/cloudinit\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.eks_managed_node_group[\"default\"].module.user_data",
+      "mode": "data",
+      "type": "cloudinit_config",
+      "name": "linux_eks_managed_node_group",
+      "provider": "provider[\"registry.terraform.io/hashicorp/cloudinit\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.kms",
+      "mode": "managed",
+      "type": "aws_kms_external_key",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.kms",
+      "mode": "managed",
+      "type": "aws_kms_grant",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.kms",
+      "mode": "managed",
+      "type": "aws_kms_replica_external_key",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.eks.module.kms",
+      "mode": "managed",
+      "type": "aws_kms_replica_key",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "data",
+      "type": "aws_arn",
+      "name": "log_group_arn",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "data",
+      "type": "aws_cloudwatch_log_group",
+      "name": "lambda",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "data",
+      "type": "aws_iam_policy",
+      "name": "tracing",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "data",
+      "type": "aws_iam_policy",
+      "name": "vpc",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "additional_inline",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "async",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "dead_letter",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "additional_inline",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "additional_json",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "additional_jsons",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "async",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "dead_letter",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "tracing",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "vpc",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "additional_inline",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "additional_json",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "additional_jsons",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "additional_many",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "additional_one",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "async",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "dead_letter",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "tracing",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "vpc",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_lambda_event_source_mapping",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_lambda_function_event_invoke_config",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_lambda_function_url",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_lambda_layer_version",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_lambda_permission",
+      "name": "current_version_triggers",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_lambda_permission",
+      "name": "unqualified_alias_triggers",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_lambda_provisioned_concurrency_config",
+      "name": "current_version",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "aws_s3_object",
+      "name": "lambda_package",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "sam_metadata_aws_lambda_function",
+      "provider": "provider[\"registry.terraform.io/hashicorp/null\"]",
+      "instances": []
+    },
+    {
+      "module": "module.login_lambda",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "sam_metadata_aws_lambda_layer_version",
+      "provider": "provider[\"registry.terraform.io/hashicorp/null\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "data",
+      "type": "aws_caller_identity",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "flow_log_cloudwatch_assume_role",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "vpc_flow_log_cloudwatch",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "data",
+      "type": "aws_partition",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "data",
+      "type": "aws_region",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "flow_log",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_customer_gateway",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_db_subnet_group",
+      "name": "database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_default_vpc",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_egress_only_internet_gateway",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_elasticache_subnet_group",
+      "name": "elasticache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_flow_log",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "vpc_flow_log_cloudwatch",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "vpc_flow_log_cloudwatch",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "vpc_flow_log_cloudwatch",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl",
+      "name": "database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl",
+      "name": "elasticache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl",
+      "name": "intra",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl",
+      "name": "outpost",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl",
+      "name": "private",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl",
+      "name": "redshift",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "database_inbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "database_outbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "elasticache_inbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "elasticache_outbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "intra_inbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "intra_outbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "outpost_inbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "outpost_outbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "private_inbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "private_outbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "public_inbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "public_outbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "redshift_inbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_network_acl_rule",
+      "name": "redshift_outbound",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_redshift_subnet_group",
+      "name": "redshift",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "database_dns64_nat_gateway",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "database_internet_gateway",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "database_ipv6_egress",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "database_nat_gateway",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "private_dns64_nat_gateway",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "private_ipv6_egress",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "public_internet_gateway_ipv6",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "elasticache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "intra",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "redshift",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "elasticache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "intra",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "outpost",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "redshift",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "redshift_public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "elasticache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "intra",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "outpost",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": 1,
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:903479130308:subnet/subnet-09ddd6b608aeb9ab3",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "us-east-1b",
+            "availability_zone_id": "use1-az2",
+            "cidr_block": "10.0.102.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-09ddd6b608aeb9ab3",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "903479130308",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Environment": "dev",
+              "Name": "infoline-vpc-public-us-east-1b",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "infoline-vpc-public-us-east-1b",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0b3053335270cc3aa"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "module.vpc.aws_vpc.this",
+            "module.vpc.aws_vpc_ipv4_cidr_block_association.this"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "redshift",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpc_block_public_access_exclusion",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpc_block_public_access_options",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpc_dhcp_options",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpc_dhcp_options_association",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpc_ipv4_cidr_block_association",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpn_gateway",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpn_gateway_attachment",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpn_gateway_route_propagation",
+      "name": "intra",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpn_gateway_route_propagation",
+      "name": "private",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpn_gateway_route_propagation",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": []
+    }
+  ],
+  "check_results": [
+    {
+      "object_kind": "resource",
+      "config_addr": "module.eks.module.eks_managed_node_group.module.user_data.null_resource.validate_cluster_service_cidr",
+      "status": "unknown",
+      "objects": null
+    },
+    {
+      "object_kind": "var",
+      "config_addr": "module.eks.module.self_managed_node_group.var.platform",
+      "status": "unknown",
+      "objects": null
+    },
+    {
+      "object_kind": "resource",
+      "config_addr": "module.eks.module.self_managed_node_group.module.user_data.null_resource.validate_cluster_service_cidr",
+      "status": "unknown",
+      "objects": null
+    }
+  ]
+}
