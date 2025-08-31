@@ -1,6 +1,6 @@
 ﻿# --- PARAMS ---
 $REGION = "us-east-1"
-$VPC    = "vpc-0b3053335270cc3aa"
+$VPC    = "vpc-037262d47f79b0b7c"
 
 Write-Host "Suppression du VPC $VPC dans $REGION"
 
