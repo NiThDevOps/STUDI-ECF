@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: webcheck-frontend-admin
+  namespace: monitoring
+spec:
+  # lance un check toutes les minutes
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.0
+              args:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  # ⚠️ IMPORTANT : URL interne du Service de TON app.
+                  # D'après ta sortie 'kubectl get svc', ton service s'appelle 'frontend-admin-service' (ns=default)
+                  URL="http://frontend-admin-service.default.svc.cluster.local/"
+
+                  # mesure latence + status HTTP (000 si unreachable)
+                  start=$(date +%s%3N)
+                  http=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || echo 000)
+                  end=$(date +%s%3N)
+                  latency=$((end - start))
+
+                  # log JSON (capté par Fluent Bit -> Elasticsearch -> Kibana)
+                  echo "{\"service\":\"frontend-admin\",\"url\":\"$URL\",\"status\":$http,\"latency_ms\":$latency,\"@timestamp\":\"$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")\"}"
