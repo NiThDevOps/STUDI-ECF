@@ -155,12 +155,12 @@ jobs:
       - name: Tell Terraform where the kubeconfig is
         run: echo "TF_VAR_kubeconfig_path=$HOME/.kube/config" >> $GITHUB_ENV
 
-      - name: Terraform Init (terraform/)
-        working-directory: terraform
+      - name: Terraform Init (terraform/monitoring)
+        working-directory: terraform/monitoring
         run: terraform init -input=false
 
-      - name: Terraform Apply (monitoring stack)
-        working-directory: terraform
+      - name: Terraform Apply (monitoring only)
+        working-directory: terraform/monitoring
         run: terraform apply -auto-approve -no-color
 
       # ---------- Déploiement de tes applications ----------
