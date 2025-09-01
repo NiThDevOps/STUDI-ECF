@@ -146,27 +146,33 @@ jobs:
       - name: Update kubeconfig (EKS)
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      # ---------- Namespace monitoring (idempotent, hors Terraform) ----------
+      # ---------- Monitoring: namespace + apply YAML (idempotent) ----------
       - name: Ensure monitoring namespace exists
         run: |
           kubectl get ns monitoring || kubectl create ns monitoring
 
-      # ---------- Terraform (EFK + CronJob) dans terraform/monitoring ----------
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.12.0
-
-      - name: Tell Terraform where the kubeconfig is
-        run: echo "TF_VAR_kubeconfig_path=$HOME/.kube/config" >> $GITHUB_ENV
-
-      - name: Terraform Init (terraform/monitoring)
-        working-directory: terraform/monitoring
-        run: terraform init -input=false
-
-      - name: Terraform Apply (monitoring only)
-        working-directory: terraform/monitoring
-        run: terraform apply -auto-approve -no-color
+      - name: Apply monitoring stack (EFK + CronJob)
+        run: |
+          set -euxo pipefail
+          # On applique dans un ordre sûr
+          kubectl apply -f terraform/monitoring/monitoring-namespace.yaml --validate=false || true
+          kubectl apply -f terraform/monitoring/elasticsearch.yaml --validate=false
+          kubectl rollout status statefulset/elasticsearch -n monitoring --timeout=300s
+          kubectl apply -f terraform/monitoring/kibana.yaml --validate=false
+          kubectl rollout status deployment/kibana -n monitoring --timeout=300s
+          kubectl apply -f terraform/monitoring/fluent-bit-config.yaml --validate=false || true
+          # Si tu as un fichier RBAC séparé
+          if [ -f terraform/monitoring/fluent-bit-rbac.yaml ]; then
+            kubectl apply -f terraform/monitoring/fluent-bit-rbac.yaml --validate=false
+          fi
+          kubectl apply -f terraform/monitoring/fluent-bit.yaml --validate=false
+          kubectl rollout status daemonset/fluent-bit -n monitoring --timeout=300s
+          # Bootstrap Kibana (Data View)
+          if [ -f terraform/monitoring/kibana-bootstrap-job.yaml ]; then
+            kubectl apply -f terraform/monitoring/kibana-bootstrap-job.yaml --validate=false
+          fi
+          # CronJob synthetic check
+          kubectl apply -f terraform/monitoring/webcheck-frontend-admin.yaml --validate=false
 
       # ---------- Déploiement de tes applications ----------
       - name: Deploy to EKS (apps)
