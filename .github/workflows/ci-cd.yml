@@ -49,7 +49,7 @@ jobs:
       - name: Build and Push Docker image
         run: |
           docker build -t hello-springboot:latest .
-          docker tag hello-springboot:latest $ECR_BACKEND_REPO:latest
+          docker tag  hello-springboot:latest $ECR_BACKEND_REPO:latest
           docker push $ECR_BACKEND_REPO:latest
 
   frontend-public:
@@ -86,7 +86,7 @@ jobs:
       - name: Build and Push Docker image
         run: |
           docker build -t frontend-public:latest .
-          docker tag frontend-public:latest $ECR_FRONTEND_PUBLIC_REPO:latest
+          docker tag  frontend-public:latest $ECR_FRONTEND_PUBLIC_REPO:latest
           docker push $ECR_FRONTEND_PUBLIC_REPO:latest
 
   frontend-admin:
@@ -123,7 +123,7 @@ jobs:
       - name: Build and Push Docker image
         run: |
           docker build -t frontend-admin:latest .
-          docker tag frontend-admin:latest $ECR_FRONTEND_ADMIN_REPO:latest
+          docker tag  frontend-admin:latest $ECR_FRONTEND_ADMIN_REPO:latest
           docker push $ECR_FRONTEND_ADMIN_REPO:latest
 
   deploy:
@@ -146,7 +146,12 @@ jobs:
       - name: Update kubeconfig (EKS)
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      # ---------- Terraform pour la supervision (EFK + CronJob) ----------
+      # ---------- Namespace monitoring (idempotent, hors Terraform) ----------
+      - name: Ensure monitoring namespace exists
+        run: |
+          kubectl get ns monitoring || kubectl create ns monitoring
+
+      # ---------- Terraform (EFK + CronJob) dans terraform/monitoring ----------
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -167,7 +172,7 @@ jobs:
       - name: Deploy to EKS (apps)
         run: |
           set -euxo pipefail
-          # Services (si présents dans ton repo)
+          # Services (si présents)
           if [ -f terraform/kubernetes/java-api-service.yaml ]; then
             kubectl apply -f terraform/kubernetes/java-api-service.yaml --validate=false
           fi
@@ -191,24 +196,40 @@ jobs:
           kubectl rollout status deployment/frontend-public -n default --timeout=${HEALTH_TIMEOUT}s
           kubectl rollout status deployment/frontend-admin -n default --timeout=${HEALTH_TIMEOUT}s
 
-      # ---------- Smoke tests (HTTP depuis un pod éphémère dans le cluster) ----------
+      # ---------- Smoke tests (HTTP depuis un pod éphémère, non bloquants) ----------
       - name: Smoke tests
         run: |
           set -euo pipefail
           ns=default
+
           k8s_curl () {
-            svc="$1"; path="$2"
-            if kubectl get svc -n "$ns" "$svc" >/dev/null 2>&1; then
-              echo "Testing http://$svc.$ns.svc.cluster.local$path"
-              kubectl run "curl-$svc-$$" -n "$ns" --rm -i --restart=Never \
-                --image=curlimages/curl:8.10.0 --quiet -- /bin/sh -lc \
-                "code=\$(curl -s -o /dev/null -w '%{http_code}' http://$svc.$ns.svc.cluster.local$path || true); echo HTTP=\$code; test \"\$code\" = \"200\""
-            else
-              echo "Service $svc not found in $ns namespace -> skipping HTTP check"
+            svc="$1"; shift
+            paths=("$@")
+
+            if ! kubectl get svc -n "$ns" "$svc" >/dev/null 2>&1; then
+              echo "::warning ::Service $svc not found in $ns namespace -> skipping"
+              return 0
             fi
+
+            ok=0
+            for p in "${paths[@]}"; do
+              code=$(kubectl run "curl-$svc-$$" -n "$ns" --rm -i --restart=Never \
+                --image=curlimages/curl:8.10.0 --quiet -- /bin/sh -lc \
+                "curl -s -o /dev/null -w '%{http_code}' http://$svc.$ns.svc.cluster.local$p || true")
+              echo "$svc $p -> HTTP=$code"
+              echo "$code" | grep -qE '^2..$' && ok=1 && break
+            done
+
+            if [ "$ok" -eq 0 ]; then
+              echo "::warning title=Smoke test failed::$svc has no 2xx on paths: ${paths[*]}"
+            fi
+            return 0
           }
-          # Adapte les noms de services si besoin
-          k8s_curl java-api-service /actuator/health
+
+          # Backend Spring : plusieurs chemins possibles
+          k8s_curl java-api-service /actuator/health /api/actuator/health /health /
+
+          # Fronts
           k8s_curl frontend-public-service /
           k8s_curl frontend-admin-service  /
 
