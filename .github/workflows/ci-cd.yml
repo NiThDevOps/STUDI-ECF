@@ -155,7 +155,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.7.5
+          terraform_version: 1.12.0
 
       - name: Tell Terraform where the kubeconfig is
         run: echo "TF_VAR_kubeconfig_path=$HOME/.kube/config" >> $GITHUB_ENV
