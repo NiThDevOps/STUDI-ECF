@@ -116,7 +116,7 @@ jobs:
       - name: Update kubeconfig (EKS)
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      # -------- attendre que les ressources EBS-CSI existent (sans appel AWS) --------
+      # -------- attendre que les ressources EBS-CSI existent (kubectl only) --------
       - name: Wait for EBS CSI addon to be ready (kubectl only)
         run: |
           set -euo pipefail
@@ -143,14 +143,30 @@ jobs:
       - name: Apply monitoring namespace
         run: kubectl apply -f terraform/monitoring/00-namespace.yaml --validate=false
 
-      - name: Apply Elasticsearch
+      - name: Apply Elasticsearch (safe replace if needed)
         run: |
           set -euo pipefail
+
+          # Si un PVC existe déjà mais n'est pas Bound ou n'a pas de SC, on supprime STS+PVC pour repartir propre
+          pvc_name="es-data-elasticsearch-0"
+          if kubectl -n monitoring get pvc "$pvc_name" >/dev/null 2>&1; then
+            phase=$(kubectl -n monitoring get pvc "$pvc_name" -o jsonpath='{.status.phase}')
+            sc=$(kubectl -n monitoring get pvc "$pvc_name" -o jsonpath='{.spec.storageClassName}')
+            echo "Existing PVC: phase=$phase, storageClassName=${sc:-<none>}"
+
+            if [ "$phase" != "Bound" ] || [ -z "${sc:-}" ]; then
+              echo "Recreating StatefulSet and PVC to pick up storageClassName=gp3..."
+              kubectl -n monitoring delete statefulset elasticsearch --ignore-not-found --cascade=orphan
+              kubectl -n monitoring delete pvc "$pvc_name" --ignore-not-found
+            fi
+          fi
+
+          # (Ré)appliquer le manifest (Service + StatefulSet avec storageClassName: gp3)
           kubectl apply -f terraform/monitoring/10-elasticsearch.yaml --validate=false
 
           echo "Waiting for PVC to bind..."
           for i in $(seq 1 36); do  # ~6 minutes
-            phase=$(kubectl -n monitoring get pvc es-data-elasticsearch-0 -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
+            phase=$(kubectl -n monitoring get pvc "$pvc_name" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
             echo "PVC phase: ${phase:-<none>}"
             [ "$phase" = "Bound" ] && break
             sleep 10
@@ -159,7 +175,7 @@ jobs:
           if [ "${phase:-}" != "Bound" ]; then
             echo "::error ::PVC not Bound after waiting. Dumping diagnostics..."
             kubectl -n monitoring get pvc,pv
-            kubectl -n monitoring describe pvc es-data-elasticsearch-0 || true
+            kubectl -n monitoring describe pvc "$pvc_name" || true
             kubectl get sc
             kubectl -n kube-system get pods -l app.kubernetes.io/name=aws-ebs-csi-driver -o wide
             exit 1
