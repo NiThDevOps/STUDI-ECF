@@ -13,7 +13,7 @@ terraform {
   required_version = ">= 1.12.0" # dernière version "stable" disponible
 }
 
-# Fournisseur : AWS
+# Fournisseur : AWS 
 provider "aws" {
   region = var.region
 }
