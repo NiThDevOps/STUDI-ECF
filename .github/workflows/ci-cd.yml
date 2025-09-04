@@ -116,16 +116,21 @@ jobs:
       - name: Update kubeconfig (EKS)
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      # -------- attendre que l’addon EBS-CSI soit prêt --------
-      - name: Wait for EBS CSI addon to be ready
+      # -------- attendre que les ressources EBS-CSI existent (sans appel AWS) --------
+      - name: Wait for EBS CSI addon to be ready (kubectl only)
         run: |
-          aws eks describe-addon \
-            --cluster-name $CLUSTER_NAME \
-            --region $AWS_REGION \
-            --addon-name aws-ebs-csi-driver \
-            --query "addon.status"
-          kubectl -n kube-system rollout status deployment/ebs-csi-controller --timeout=180s || true
-          kubectl -n kube-system rollout status daemonset/ebs-csi-node --timeout=180s || true
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            if kubectl -n kube-system get deploy ebs-csi-controller >/dev/null 2>&1 && \
+               kubectl -n kube-system get ds ebs-csi-node >/dev/null 2>&1; then
+              echo "EBS-CSI resources found."
+              break
+            fi
+            echo "EBS-CSI resources not found yet... retry $i/30"
+            sleep 10
+          done
+          kubectl -n kube-system rollout status deployment/ebs-csi-controller --timeout=300s || true
+          kubectl -n kube-system rollout status daemonset/ebs-csi-node --timeout=300s || true
           kubectl -n kube-system get pods -l app.kubernetes.io/name=aws-ebs-csi-driver -o wide || true
 
       # ---------- StorageClass par défaut (gp3) ----------
