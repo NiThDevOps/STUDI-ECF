@@ -37,15 +37,19 @@ spec:
             - name: discovery.type
               value: single-node
             - name: xpack.security.enabled
-              value: "false"   # simple pour démo
+              value: "false"
             - name: ES_JAVA_OPTS
               value: "-Xms512m -Xmx512m"
           volumeMounts:
             - name: es-data
               mountPath: /usr/share/elasticsearch/data
           resources:
-            requests: { cpu: "200m", memory: "1Gi" }
-            limits:   { cpu: "1",    memory: "2Gi" }
+            requests:
+              cpu: 200m
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 2Gi
           readinessProbe:
             httpGet:
               path: /_cluster/health?wait_for_status=yellow&timeout=1s

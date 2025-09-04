@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0" # utilise la dernière version 5.X disponible. version 6 en bêta
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.25"
+    }
   }
   required_version = ">= 1.12.0" # dernière version "stable" disponible
 }
@@ -12,4 +16,4 @@ terraform {
 # Fournisseur : AWS
 provider "aws" {
   region = var.region
-  }
+}

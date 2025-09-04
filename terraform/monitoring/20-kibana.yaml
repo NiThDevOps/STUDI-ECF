@@ -9,7 +9,7 @@ spec:
     - name: http
       port: 5601
       targetPort: 5601
-      nodePort: 30560   # Accès: http://<node-ip>:30560
+      nodePort: 30560
   selector:
     app: kibana
 ---
@@ -37,5 +37,9 @@ spec:
             - name: ELASTICSEARCH_HOSTS
               value: "http://elasticsearch.monitoring.svc.cluster.local:9200"
           resources:
-            requests: { cpu: "100m", memory: "256Mi" }
-            limits:   { cpu: "500m", memory: "512Mi" }
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
