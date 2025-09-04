@@ -116,6 +116,18 @@ jobs:
       - name: Update kubeconfig (EKS)
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
+      # -------- attendre que l’addon EBS-CSI soit prêt --------
+      - name: Wait for EBS CSI addon to be ready
+        run: |
+          aws eks describe-addon \
+            --cluster-name $CLUSTER_NAME \
+            --region $AWS_REGION \
+            --addon-name aws-ebs-csi-driver \
+            --query "addon.status"
+          kubectl -n kube-system rollout status deployment/ebs-csi-controller --timeout=180s || true
+          kubectl -n kube-system rollout status daemonset/ebs-csi-node --timeout=180s || true
+          kubectl -n kube-system get pods -l app.kubernetes.io/name=aws-ebs-csi-driver -o wide || true
+
       # ---------- StorageClass par défaut (gp3) ----------
       - name: Apply default StorageClass (gp3)
         run: |
@@ -130,12 +142,25 @@ jobs:
         run: |
           set -euo pipefail
           kubectl apply -f terraform/monitoring/10-elasticsearch.yaml --validate=false
+
           echo "Waiting for PVC to bind..."
-          for i in $(seq 1 30); do
+          for i in $(seq 1 36); do  # ~6 minutes
             phase=$(kubectl -n monitoring get pvc es-data-elasticsearch-0 -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
+            echo "PVC phase: ${phase:-<none>}"
             [ "$phase" = "Bound" ] && break
             sleep 10
           done
+
+          if [ "${phase:-}" != "Bound" ]; then
+            echo "::error ::PVC not Bound after waiting. Dumping diagnostics..."
+            kubectl -n monitoring get pvc,pv
+            kubectl -n monitoring describe pvc es-data-elasticsearch-0 || true
+            kubectl get sc
+            kubectl -n kube-system get pods -l app.kubernetes.io/name=aws-ebs-csi-driver -o wide
+            exit 1
+          fi
+
+          echo "PVC Bound. Waiting for StatefulSet ready..."
           kubectl rollout status statefulset/elasticsearch -n monitoring --timeout=${HEALTH_TIMEOUT}s
 
       - name: Apply Kibana
