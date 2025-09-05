@@ -8,4 +8,4 @@ provisioner: ebs.csi.aws.com
 volumeBindingMode: WaitForFirstConsumer
 parameters:
   type: gp3
-  fsType: xfs
+  fsType: ext4   # <-- ext4 for cleaner UNIX perms behavior with fsGroup
