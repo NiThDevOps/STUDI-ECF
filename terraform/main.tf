@@ -10,7 +10,7 @@ terraform {
       version = ">= 2.25"
     }
   }
-  required_version = ">= 1.12.0" # dernière version "stable" disponible
+  required_version = ">= 1.12.0" # dernière version "stable" disponible  
 }
 
 # Fournisseur : AWS 
