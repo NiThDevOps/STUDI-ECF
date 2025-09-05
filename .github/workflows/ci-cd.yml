@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [backend, frontend-public, frontend-admin]
     env:
-      HEALTH_TIMEOUT: 900
+      HEALTH_TIMEOUT: 600
     steps:
       - uses: actions/checkout@v4
 
@@ -116,116 +116,45 @@ jobs:
       - name: Update kubeconfig (EKS)
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      - name: Wait for EBS CSI addon to be ready (kubectl only)
+      # ---------- Monitoring ----------
+      - name: Ensure monitoring namespace
+        run: |
+          kubectl get ns monitoring || kubectl create ns monitoring
+
+      # Nettoyage des anciens objets stateful (si présents)
+      - name: Cleanup legacy ES StatefulSet/PVC
         run: |
           set -euo pipefail
-          for i in $(seq 1 30); do
-            if kubectl -n kube-system get deploy ebs-csi-controller >/dev/null 2>&1 && \
-               kubectl -n kube-system get ds ebs-csi-node >/dev/null 2>&1; then
-              echo "EBS-CSI resources found."
-              break
-            fi
-            echo "EBS-CSI resources not found yet... retry $i/30"
-            sleep 10
-          done
-          kubectl -n kube-system rollout status deployment/ebs-csi-controller --timeout=300s || true
-          kubectl -n kube-system rollout status daemonset/ebs-csi-node --timeout=300s || true
-          kubectl -n kube-system get pods -l app.kubernetes.io/name=aws-ebs-csi-driver -o wide || true
+          kubectl -n monitoring delete statefulset elasticsearch --ignore-not-found --cascade=orphan || true
+          kubectl -n monitoring delete pvc es-data-elasticsearch-0 --ignore-not-found || true
 
-      # ---------- Namespace Monitoring ----------
-      - name: Apply monitoring namespace
-        run: kubectl apply -f terraform/monitoring/00-namespace.yaml --validate=false
-
-      # ---------- StorageClass gp3 (ext4) : remplacement propre ----------
-      - name: Ensure StorageClass gp3 is ext4 (replace if needed)
+      - name: Apply Elasticsearch (Deployment + emptyDir)
         run: |
           set -euo pipefail
-          desired_fs="ext4"
-          sc="gp3"
-          pvc_ns="monitoring"
-          pvc_name="es-data-elasticsearch-0"
-
-          exists=$(kubectl get sc "$sc" -o name 2>/dev/null || true)
-          if [ -n "$exists" ]; then
-            fs=$(kubectl get sc "$sc" -o jsonpath='{.parameters.fsType}' 2>/dev/null || echo "")
-            echo "Existing StorageClass $sc with fsType='${fs:-<none>}'"
-            if [ "${fs:-}" != "$desired_fs" ]; then
-              echo "StorageClass $sc not '$desired_fs' -> replacing cleanly"
-
-              # 1) Supprimer proprement ES (et son PVC) pour libérer la SC
-              kubectl -n "$pvc_ns" delete statefulset elasticsearch --ignore-not-found --cascade=orphan
-              kubectl -n "$pvc_ns" delete pvc "$pvc_name" --ignore-not-found
-
-              # 2) Vérifier s'il reste d'autres PVC utilisant 'gp3'
-              users=$(kubectl get pvc -A -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadata.name}{" "}{.spec.storageClassName}{"\n"}{end}' | awk '$3=="gp3" {print $1 "/" $2}')
-              if [ -n "$users" ]; then
-                echo "::warning ::D'autres PVC utilisent encore '$sc' (ils continueront à fonctionner même si on supprime la SC) :"
-                echo "$users"
-              fi
-
-              # 3) Supprimer puis recréer la SC 'gp3' au format ext4
-              kubectl delete sc "$sc"
-              kubectl apply -f terraform/monitoring/00-storageclass.yaml --validate=false
-            else
-              echo "StorageClass $sc already uses '$desired_fs' -> nothing to do"
-            fi
-          else
-            echo "StorageClass $sc not found -> creating"
-            kubectl apply -f terraform/monitoring/00-storageclass.yaml --validate=false
-          fi
-
-          kubectl get sc
-
-      # ---------- Elasticsearch ----------
-      - name: Apply Elasticsearch (StatefulSet + Service)
-        run: |
-          set -euo pipefail
-          ns="monitoring"
-          pvc="es-data-elasticsearch-0"
-
           kubectl apply -f terraform/monitoring/10-elasticsearch.yaml --validate=false
-
-          echo "Waiting for PVC to bind..."
-          for i in $(seq 1 36); do
-            phase=$(kubectl -n "$ns" get pvc "$pvc" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-            echo "PVC phase: ${phase:-<none>}"
-            [ "$phase" = "Bound" ] && break
+          # attendre que le pod soit prêt
+          for i in $(seq 1 40); do
+            ready=$(kubectl -n monitoring get deploy elasticsearch -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo 0)
+            echo "ES readyReplicas=$ready"
+            [ "$ready" = "1" ] && break
             sleep 10
           done
+          kubectl -n monitoring rollout status deployment/elasticsearch --timeout=${HEALTH_TIMEOUT}s
 
-          if [ "${phase:-}" != "Bound" ]; then
-            echo "::error ::PVC not Bound after waiting. Dumping diagnostics..."
-            kubectl -n "$ns" get pvc,pv
-            kubectl -n "$ns" describe pvc "$pvc" || true
-            kubectl get sc
-            kubectl -n kube-system get pods -l app.kubernetes.io/name=aws-ebs-csi-driver -o wide
-            exit 1
-          fi
-
-          echo "PVC Bound. Waiting for StatefulSet ready..."
-          if ! kubectl rollout status statefulset/elasticsearch -n "$ns" --timeout=${HEALTH_TIMEOUT}s; then
-            echo "::error ::Elasticsearch not ready within timeout. Dumping pod describe and logs..."
-            kubectl -n "$ns" describe pod -l app=elasticsearch || true
-            pod=$(kubectl -n "$ns" get pod -l app=elasticsearch -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
-            if [ -n "$pod" ]; then
-              kubectl -n "$ns" logs "$pod" --tail=200 || true
-            fi
-            exit 1
-          fi
-
-      # ---------- Kibana ----------
       - name: Apply Kibana
         run: |
           set -euo pipefail
           kubectl apply -f terraform/monitoring/20-kibana.yaml --validate=false
-          kubectl rollout status deployment/kibana -n monitoring --timeout=${HEALTH_TIMEOUT}s
+          kubectl -n monitoring rollout status deployment/kibana --timeout=${HEALTH_TIMEOUT}s
+          # Affiche l'URL NodePort
+          nodes=$(kubectl get nodes -o jsonpath='{range .items[*]}{.status.addresses[?(@.type=="InternalIP")].address}{"\n"}{end}')
+          echo "::notice title=Kibana NodePort::http://<any-node-ip>:30560 (nodes: $nodes)"
 
-      # ---------- Fluent Bit ----------
       - name: Apply Fluent Bit
         run: |
           set -euo pipefail
           kubectl apply -f terraform/monitoring/30-fluent-bit.yaml --validate=false
-          kubectl rollout status daemonset/fluent-bit -n monitoring --timeout=${HEALTH_TIMEOUT}s
+          kubectl -n monitoring rollout status daemonset/fluent-bit --timeout=${HEALTH_TIMEOUT}s
 
       # ---------- Applications ----------
       - name: Deploy to EKS (apps)
