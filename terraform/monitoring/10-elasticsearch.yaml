@@ -52,10 +52,13 @@ spec:
               memory: 1Gi
           readinessProbe:
             httpGet:
-              path: /_cluster/health?wait_for_status=yellow&timeout=1s
+              # on laisse elastic se stabiliser jusqu'au statut "yellow"
+              path: /_cluster/health?wait_for_status=yellow&timeout=50s
               port: 9200
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 12
   volumeClaimTemplates:
     - metadata:
         name: es-data
