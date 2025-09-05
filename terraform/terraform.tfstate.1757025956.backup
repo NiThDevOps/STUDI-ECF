@@ -1,0 +1,130 @@
+{
+  "version": 4,
+  "terraform_version": "1.12.0",
+  "serial": 1466,
+  "lineage": "d918d370-bb10-0cae-999b-70078f06cd50",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_ecr_repository",
+      "name": "frontend_admin",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ecr:us-east-1:903479130308:repository/frontend-admin",
+            "encryption_configuration": [
+              {
+                "encryption_type": "AES256",
+                "kms_key": ""
+              }
+            ],
+            "force_delete": null,
+            "id": "frontend-admin",
+            "image_scanning_configuration": [
+              {
+                "scan_on_push": true
+              }
+            ],
+            "image_tag_mutability": "MUTABLE",
+            "name": "frontend-admin",
+            "registry_id": "903479130308",
+            "repository_url": "903479130308.dkr.ecr.us-east-1.amazonaws.com/frontend-admin",
+            "tags": {
+              "Environment": "dev",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxMjAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": 1,
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:903479130308:subnet/subnet-08be7ff07e2259fbc",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "us-east-1b",
+            "availability_zone_id": "use1-az2",
+            "cidr_block": "10.0.102.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-08be7ff07e2259fbc",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "903479130308",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Environment": "dev",
+              "Name": "infoline-vpc-public-us-east-1b",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "infoline-vpc-public-us-east-1b",
+              "Project": "STUDI-ECF",
+              "Terraform": "true"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-058a85dbf54bd3d82"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "module.vpc.aws_vpc.this",
+            "module.vpc.aws_vpc_ipv4_cidr_block_association.this"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    }
+  ],
+  "check_results": [
+    {
+      "object_kind": "var",
+      "config_addr": "module.eks.module.self_managed_node_group.var.platform",
+      "status": "unknown",
+      "objects": null
+    },
+    {
+      "object_kind": "resource",
+      "config_addr": "module.eks.module.self_managed_node_group.module.user_data.null_resource.validate_cluster_service_cidr",
+      "status": "unknown",
+      "objects": null
+    },
+    {
+      "object_kind": "resource",
+      "config_addr": "module.eks.module.eks_managed_node_group.module.user_data.null_resource.validate_cluster_service_cidr",
+      "status": "unknown",
+      "objects": null
+    }
+  ]
+}

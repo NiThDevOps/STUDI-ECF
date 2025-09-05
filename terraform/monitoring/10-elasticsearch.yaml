@@ -39,22 +39,22 @@ spec:
             - name: xpack.security.enabled
               value: "false"
             - name: ES_JAVA_OPTS
-              value: "-Xms512m -Xmx512m"
+              value: "-Xms256m -Xmx256m"
           volumeMounts:
             - name: es-data
               mountPath: /usr/share/elasticsearch/data
           resources:
             requests:
-              cpu: 200m
-              memory: 1Gi
+              cpu: 100m
+              memory: 512Mi
             limits:
-              cpu: "1"
-              memory: 2Gi
+              cpu: 500m
+              memory: 1Gi
           readinessProbe:
             httpGet:
               path: /_cluster/health?wait_for_status=yellow&timeout=1s
               port: 9200
-            initialDelaySeconds: 10
+            initialDelaySeconds: 15
             periodSeconds: 10
   volumeClaimTemplates:
     - metadata:
