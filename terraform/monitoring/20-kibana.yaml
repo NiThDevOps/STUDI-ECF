@@ -34,12 +34,37 @@ spec:
           ports:
             - containerPort: 5601
           env:
+            # ES est en HTTP sans auth (xpack.security désactivé côté ES)
             - name: ELASTICSEARCH_HOSTS
               value: "http://elasticsearch.monitoring.svc.cluster.local:9200"
+            # Allonger quelques timeouts de connexions
+            - name: ELASTICSEARCH_REQUESTTIMEOUT
+              value: "60000"
+            - name: SERVER_HOST
+              value: "0.0.0.0"
+            # Limiter la heap Node.js interne de Kibana pour réduire l’empreinte mémoire
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=512"
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 10
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 500m
+              cpu: 200m
               memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 1536Mi
